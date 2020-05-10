@@ -1,76 +1,32 @@
-const MODAL_OPENED_EVENT_NAME = 'modal-opened'
-const MODAL_CLOSED_EVENT_NAME = 'modal-closed'
+import { Modal } from "./Modal.js";
+import { Button } from "./Button.js";
 
 /**
- * Main modal logic
+ * the fetch method is outside the scope of the Modal class.
  *
- * @param event
+ * @param modal
  */
-const fetchMainModalData = (event) => {
-    const modalEl = event.target
-    const loadingEl = modalEl.querySelector('.modal-content .loading')
-    const contentEl = modalEl.querySelector('.modal-content .content')
-
-    contentEl.classList.remove('active')
-    loadingEl.classList.add('active')
+const fetchMainModalData = (modal) => {
+    modal.setLoading(true)
 
     fetch('data.php', { method: 'GET' })
         .then((response) => response.json())
-        .then(jsonResponse => contentEl.innerHTML = jsonResponse.data)
-        .catch(() => contentEl.innerHTML = 'Something went wrong, please try again.')
+        .then(jsonResponse => modal.contentEl.innerHTML = jsonResponse.data)
+        .catch(() => modal.contentEl.innerHTML = 'Something went wrong, please try again.')
         .finally(() => {
-            loadingEl.classList.remove('active')
-            contentEl.classList.add('active')
+            modal.setLoading(false)
         })
-}
-
-/**
- * open any modal on the page
- *
- * @param event
- */
-const openModal = (event) => {
-    const modalId = event.target.getAttribute('data-open-modal')
-    const modalEl = document.getElementById(modalId)
-
-    if (modalEl === null) {
-        throw new Error(`Modal with the id '${modalId}' was not founded.`)
-    }
-
-
-    modalEl.focus()
-    modalEl.classList.add('active')
-    modalEl.querySelector('.modal-overlay').addEventListener('click', closeModal)
-    modalEl.dispatchEvent(new CustomEvent(MODAL_OPENED_EVENT_NAME, {target: modalEl}))
-}
-
-/**
- * close any modal on the page
- *
- * @param event
- */
-const closeModal = (event) => {
-    event.target.removeEventListener('click', closeModal)
-
-    const modalEl = event.target.parentElement
-
-    modalEl.classList.remove('active')
-    modalEl.dispatchEvent(new CustomEvent(MODAL_CLOSED_EVENT_NAME, {target: modalEl}))
 }
 
 /**
  * This is the main function that run on page ready.
  */
 const main = () => {
-    document
-        .querySelectorAll('[data-open-modal]')
-        .forEach(el => {
-            el.addEventListener('click', openModal)
-        })
+    const mainModal = new Modal(document.getElementById('mainModal'))
+        .pushOnOpenHandler(fetchMainModalData);
 
-    document
-        .querySelector('#mainModal')
-        .addEventListener(MODAL_OPENED_EVENT_NAME, fetchMainModalData)
+    new Button(document.getElementById('mainBtn'))
+        .bindListener('click', () => mainModal.open())
 }
 
 document.addEventListener('DOMContentLoaded', main)
