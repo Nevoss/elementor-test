@@ -1,5 +1,10 @@
 <?php
-require_once 'HttpHandler.php';
+require_once 'autoload.php';
 
-$httpHandler = new HttpHandler($_GET, $_POST);
-$httpHandler->htmlResponse('./public/index.html');
+if ($_GET['fetch_data'] === '1') {
+    $handler = new DataFetchingHttpHandler($_GET, $_POST);
+} else {
+    $handler = new IndexPageHttpHandler($_GET, $_POST);
+}
+
+$handler->handle();

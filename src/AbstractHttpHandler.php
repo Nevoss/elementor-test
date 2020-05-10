@@ -1,6 +1,6 @@
 <?php
 
-class HttpHandler
+abstract class AbstractHttpHandler
 {
     /**
      * hold the $_GET data
@@ -33,7 +33,7 @@ class HttpHandler
      *
      * @param $data
      */
-    public function jsonResponse($data)
+    protected function jsonResponse($data)
     {
         header('Content-Type: application/json');
 
@@ -46,11 +46,18 @@ class HttpHandler
      *
      * @param $path
      */
-    public function htmlResponse($path)
+    protected function htmlResponse($path)
     {
         header('Content-Type: text/html');
 
         echo file_get_contents($path);
         die;
     }
+
+    /**
+     * handle method
+     *
+     * @return mixed
+     */
+    abstract public function handle();
 }

@@ -9,7 +9,7 @@ import { Button } from "./Button.js";
 const fetchMainModalData = (modal) => {
     modal.setLoading(true)
 
-    fetch('data.php', { method: 'GET' })
+    fetch('index.php?fetch_data=1', { method: 'GET' })
         .then((response) => response.json())
         .then(jsonResponse => modal.contentEl.innerHTML = jsonResponse.data)
         .catch(() => modal.contentEl.innerHTML = 'Something went wrong, please try again.')
